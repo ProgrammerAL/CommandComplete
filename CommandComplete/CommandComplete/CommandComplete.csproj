@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageProjectUrl>https://github.com/ProgrammerAl/Console-Complete</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/ProgrammerAl/Console-Complete/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ProgrammerAl/Console-Complete</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageId>CommandComplete</PackageId>
+    <Authors>ProgrammerAl</Authors>
+    <Product>CommandComplete</Product>
+    <AssemblyName>CommandComplete</AssemblyName>
+    <RootNamespace>CommandComplete</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
+  </ItemGroup>
+
+</Project>
