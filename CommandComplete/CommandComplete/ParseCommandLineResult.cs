@@ -9,24 +9,14 @@ namespace CommandComplete
     {
         public static readonly ParseCommandLineResult CouldNotParseCommand = new ParseCommandLineResult();
 
-        public static ParseCommandLineResult GenerateWithOneHigherTabbedCount(ParseCommandLineResult previousResult)
-        {
-            return new ParseCommandLineResult(
-                previousResult.Command,
-                previousResult.FlaggedParameters,
-                previousResult.ValuedParameters,
-                previousResult.RemainingText,
-                previousResult.PossibleTextsToAutofill,
-                previousResult.TabbedCount + 1
-                );
-        }
-
         public ParseCommandLineResult()
         {
             ThinkWeHaveSomething = false;
             Command = null;
             FlaggedParameters = ImmutableList.Create<ParameterOption>();
             ValuedParameters = ImmutableList.Create<(ParameterOption, string)>();
+            RemainingText = string.Empty;
+            PossibleTextsToAutofill = ImmutableList.Create<string>();
         }
 
         /// <param name="command">The name of the command being used</param>
@@ -39,8 +29,7 @@ namespace CommandComplete
             IEnumerable<ParameterOption> flaggedParameters,
             IEnumerable<(ParameterOption, string)> valuedParameters,
             string remainingText,
-            IEnumerable<ParameterOption> possibleTextsToAutofill,
-            int tabbedCount)
+            IEnumerable<string> possibleTextsToAutofill)
         {
             ThinkWeHaveSomething = true;
 
@@ -49,9 +38,7 @@ namespace CommandComplete
             ValuedParameters = valuedParameters?.ToImmutableList() ?? ImmutableList.Create<(ParameterOption, string)>();
 
             RemainingText = remainingText;
-            PossibleTextsToAutofill = possibleTextsToAutofill?.ToImmutableList() ?? ImmutableList.Create<ParameterOption>();
-
-            TabbedCount = tabbedCount;
+            PossibleTextsToAutofill = possibleTextsToAutofill?.ToImmutableList() ?? ImmutableList.Create<string>();
         }
 
         /// <summary>
@@ -82,11 +69,6 @@ namespace CommandComplete
         /// <summary>
         /// Possible sets of text that can be added to the end of the command string
         /// </summary>
-        public IImmutableList<ParameterOption> PossibleTextsToAutofill { get; }
-
-        /// <summary>
-        /// How many times the Tab key has been used on this set of options
-        /// </summary>
-        public int TabbedCount { get; }
+        public IImmutableList<string> PossibleTextsToAutofill { get; }
     }
 }

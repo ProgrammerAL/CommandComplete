@@ -14,30 +14,50 @@ namespace CommandComplete.UnitTests
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", ConsoleKey.M, null, commandCache);
+            var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", null, commandCache);
 
             Assert.True(result.ThinkWeHaveSomething);
             Assert.Equal("command1", result.Command.Name, ignoreCase: true);
             Assert.Equal("FlagParam1", result.FlaggedParameters.Single().Name);
             Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
 
-            Assert.Equal(0, result.TabbedCount);
             Assert.Equal("-para", result.RemainingText);
 
             Assert.Equal(2, result.PossibleTextsToAutofill.Count);
         }
 
         [Fact]
-        public void WhenPressingTabAfterCommanding_AssertTabbedCountIncremented()
+        public void WhenEnteredCommandName_AssertCommandOptionsFound()
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", ConsoleKey.M, null, commandCache);
-            result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -param", ConsoleKey.Tab, result, commandCache);
-            Assert.Equal(1, result.TabbedCount);
+            var result = parser.ParseCommandLine("comman", null, commandCache);
 
-            result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -param", ConsoleKey.Tab, result, commandCache);
-            Assert.Equal(2, result.TabbedCount);
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal(2, result.PossibleTextsToAutofill.Count);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("   ")]
+        public void WhenTextEmpty_AssertResult(string commandText)
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine(commandText, null, commandCache);
+
+            Assert.True(result.ThinkWeHaveSomething);
+        }
+
+        [Fact]
+        public void WhenCommandEnteredButNotInCache_AssertResult()
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine("jshdb ", null, commandCache);
+
+            Assert.Equal(ParseCommandLineResult.CouldNotParseCommand, result);
         }
 
         private ICommandCache GenerateCommandCache()

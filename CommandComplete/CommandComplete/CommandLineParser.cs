@@ -10,44 +10,35 @@ namespace CommandComplete
     {
         private const char CommandLineSeparatorChar_Space = ' ';
 
-        public ParseCommandLineResult ParseCommandLine(string textSoFar, ConsoleKey mostRecentKey, ParseCommandLineResult previousParseResult, ICommandCache commandsCache)
+        public ParseCommandLineResult ParseCommandLine(string textSoFar, ParseCommandLineResult previousParseResult, ICommandCache commandsCache)
         {
             var parseResultFromThisRunThrough = previousParseResult ?? ParseCommandLineResult.CouldNotParseCommand;
 
-            if (mostRecentKey == ConsoleKey.Tab)
-            {
-                //On Tab pressed, try to do auto-complete for next set of text
-                if (parseResultFromThisRunThrough != null
-                    && parseResultFromThisRunThrough.ThinkWeHaveSomething)
-                {
-                    parseResultFromThisRunThrough = ParseCommandLineResult.GenerateWithOneHigherTabbedCount(parseResultFromThisRunThrough);
-                }
-            }
-            else
-            {
-                //Steps:
-                // - Check if command name has been set yet by searching string for a space
-                // - If no space, try to find a command that matches the already existing name
-                // - If has space, try to find command and then try to use parameter
-                //var userTextSoFar = builder.ToString();
-                parseResultFromThisRunThrough = ParseCommandNameFromText(textSoFar, commandsCache);
-            }
+            //Steps:
+            // - Check if command name has been set yet by searching string for a space
+            // - If no space, try to find a command that matches the already existing name
+            // - If has space, try to find command and then try to use parameter
+            parseResultFromThisRunThrough = ParseCommandNameFromText(textSoFar, commandsCache);
 
             return parseResultFromThisRunThrough;
         }
 
         private ParseCommandLineResult ParseCommandNameFromText(string userTextSoFar, ICommandCache commandsCache)
         {
-            var spaceIndex = userTextSoFar.IndexOf(CommandLineSeparatorChar_Space);
-            if (spaceIndex == -1)
+            var sanitizedText = SanitizeUserText(userTextSoFar);
+            var spaceIndex = sanitizedText.IndexOf(CommandLineSeparatorChar_Space);
+            if (!SpaceCharacterFound(spaceIndex))
             {
                 //Don't have a command set yet, so try to find one that matches 
-
+                var possibleCommandNames = commandsCache.PossibleCommands
+                                                    .Where(x => x.Name.StartsWith(sanitizedText, StringComparison.OrdinalIgnoreCase))
+                                                    .Select(x => x.Name);
+                return new ParseCommandLineResult(null, null, null, sanitizedText, possibleCommandNames);
             }
             else
             {
                 //Guess we know the command
-                var commandName = userTextSoFar.Substring(0, spaceIndex);
+                var commandName = sanitizedText.Substring(0, spaceIndex);
                 var knownCommand = commandsCache
                                         .PossibleCommands
                                         .FirstOrDefault(x => string.Equals(x.Name, commandName, StringComparison.OrdinalIgnoreCase));
@@ -59,12 +50,12 @@ namespace CommandComplete
                 }
                 else
                 {
-                    var textAfterCommand = userTextSoFar.Substring(spaceIndex + 1);
+                    var textAfterCommand = sanitizedText.Substring(spaceIndex + 1);
                     var parameters = textAfterCommand.Split(CommandLineSeparatorChar_Space);
 
                     IList<(ParameterOption Param, string Value)> valuedParameters = new List<(ParameterOption Param, string Value)>();
                     IList<ParameterOption> flaggedParameters = new List<ParameterOption>();
-                    IList<ParameterOption> possibleNextParameters = new List<ParameterOption>();
+                    IList<string> possibleNextParameters = new List<string>();
                     string remainingText = null;
 
                     if (parameters.Any())
@@ -100,7 +91,7 @@ namespace CommandComplete
                                     //If we're on the last param value user is probably mid-way through typing it
                                     remainingText = paramName;
                                     var parametersAlreadyUsed = valuedParameters.Select(x => x.Param).Concat(flaggedParameters).ToImmutableList();
-                                    possibleNextParameters = knownCommand.GetPossibleParametersThatStartWith(remainingText, parametersAlreadyUsed);
+                                    possibleNextParameters = knownCommand.GetPossibleParametersThatStartWith(remainingText, parametersAlreadyUsed).Select(x => x.Name).ToList();
                                 }
                             }
 
@@ -119,13 +110,19 @@ namespace CommandComplete
                         flaggedParameters,
                         valuedParameters,
                         remainingText,
-                        possibleNextParameters,
-                        0);
+                        possibleNextParameters);
                 }
             }
+        }
 
-            //TODO: Finish this method. Return line below is temporary
-            return ParseCommandLineResult.CouldNotParseCommand;
+        private string SanitizeUserText(string userText)
+        {
+            return userText?.TrimStart() ?? string.Empty;
+        }
+
+        private bool SpaceCharacterFound(int spaceIndex)
+        {
+            return spaceIndex > -1;
         }
 
         private bool ParametersHasValueForParamAtIndex(string[] parameters, int index)
@@ -137,17 +134,5 @@ namespace CommandComplete
         {
             return i == (parameters.Length - 1);
         }
-
-        private static bool CanChooseNextCommandInList(IList<string> commandsToChooseFrom, int indexOfLastCommandGuessed)
-        {
-            return indexOfLastCommandGuessed > -1 && indexOfLastCommandGuessed + 1 < commandsToChooseFrom.Count;
-        }
-
-        //private bool KeyIsCommandAcceptable(ConsoleKeyInfo nextKey, ICommandCache commandsCache)
-        //{
-        //    return char.IsLetterOrDigit(nextKey.KeyChar)
-        //        || nextKey.Key == ConsoleKey.Spacebar
-        //        || nextKey.KeyChar == commandsCache.ParameterHeader;
-        //}
     }
 }
