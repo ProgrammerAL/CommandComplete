@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageProjectUrl>https://github.com/ProgrammerAl/Console-Complete</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/ProgrammerAl/Console-Complete/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/ProgrammerAl/Console-Complete</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ProgrammerAl/CommandComplete</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/ProgrammerAl/CommandComplete/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ProgrammerAl/CommandComplete</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageId>CommandComplete</PackageId>
     <Authors>ProgrammerAl</Authors>
     <Product>CommandComplete</Product>
     <AssemblyName>CommandComplete</AssemblyName>
     <RootNamespace>CommandComplete</RootNamespace>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
