@@ -73,7 +73,7 @@ namespace CommandComplete
         public IList<ParameterOption> GetPossibleParametersThatStartWith(string remainingText, IImmutableList<ParameterOption> parametersToExclude)
         {
             var remaingTextWithoutHeader = remainingText;
-            if (remaingTextWithoutHeader.StartsWith(ParameterHeader.ToString()))
+            if (remaingTextWithoutHeader.FirstOrDefault() == ParameterHeader)
             {
                 remaingTextWithoutHeader = remaingTextWithoutHeader.Substring(1);
             }
