@@ -14,7 +14,7 @@ namespace CommandComplete.UnitTests
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", null, commandCache);
+            var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", commandCache);
 
             Assert.True(result.ThinkWeHaveSomething);
             Assert.Equal("command1", result.Command.Name, ignoreCase: true);
@@ -27,11 +27,23 @@ namespace CommandComplete.UnitTests
         }
 
         [Fact]
+        public void WhenParameterDOesNotHaveValue_AssertParameterFoundWithNoValue()
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine("command1 -param1", commandCache);
+
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
+            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+        }
+
+        [Fact]
         public void WhenEnteredCommandName_AssertCommandOptionsFound()
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine("comman", null, commandCache);
+            var result = parser.ParseCommandLine("comman", commandCache);
 
             Assert.True(result.ThinkWeHaveSomething);
             Assert.Equal(2, result.PossibleTextsToAutofill.Count);
@@ -45,7 +57,7 @@ namespace CommandComplete.UnitTests
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine(commandText, null, commandCache);
+            var result = parser.ParseCommandLine(commandText, commandCache);
 
             Assert.True(result.ThinkWeHaveSomething);
         }
@@ -55,7 +67,7 @@ namespace CommandComplete.UnitTests
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
-            var result = parser.ParseCommandLine("jshdb ", null, commandCache);
+            var result = parser.ParseCommandLine("jshdb ", commandCache);
 
             Assert.Equal(ParseCommandLineResult.CouldNotParseCommand, result);
         }

@@ -37,7 +37,7 @@ namespace CommandComplete
             FlaggedParameters = flaggedParameters?.ToImmutableList() ?? ImmutableList.Create<ParameterOption>();
             ValuedParameters = valuedParameters?.ToImmutableList() ?? ImmutableList.Create<(ParameterOption, string)>();
 
-            RemainingText = remainingText;
+            RemainingText = remainingText ?? string.Empty;
             PossibleTextsToAutofill = possibleTextsToAutofill?.ToImmutableList() ?? ImmutableList.Create<string>();
         }
 

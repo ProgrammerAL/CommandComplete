@@ -10,21 +10,13 @@ namespace CommandComplete
     {
         private const char CommandLineSeparatorChar_Space = ' ';
 
-        public ParseCommandLineResult ParseCommandLine(string textSoFar, ParseCommandLineResult previousParseResult, ICommandCache commandsCache)
+        public ParseCommandLineResult ParseCommandLine(string userTextSoFar, ICommandCache commandsCache)
         {
-            var parseResultFromThisRunThrough = previousParseResult ?? ParseCommandLineResult.CouldNotParseCommand;
-
             //Steps:
             // - Check if command name has been set yet by searching string for a space
             // - If no space, try to find a command that matches the already existing name
             // - If has space, try to find command and then try to use parameter
-            parseResultFromThisRunThrough = ParseCommandNameFromText(textSoFar, commandsCache);
 
-            return parseResultFromThisRunThrough;
-        }
-
-        private ParseCommandLineResult ParseCommandNameFromText(string userTextSoFar, ICommandCache commandsCache)
-        {
             var sanitizedText = SanitizeUserText(userTextSoFar);
             var spaceIndex = sanitizedText.IndexOf(CommandLineSeparatorChar_Space);
             if (!SpaceCharacterFound(spaceIndex))
@@ -56,7 +48,7 @@ namespace CommandComplete
                     IList<(ParameterOption Param, string Value)> valuedParameters = new List<(ParameterOption Param, string Value)>();
                     IList<ParameterOption> flaggedParameters = new List<ParameterOption>();
                     IList<string> possibleNextParameters = new List<string>();
-                    string remainingText = null;
+                    string remainingText = string.Empty;
 
                     if (parameters.Any())
                     {
@@ -70,12 +62,7 @@ namespace CommandComplete
                                 //Then we already know about this param
                                 if (knownParam.TakesInputValue)
                                 {
-                                    if (ParametersHasValueForParamAtIndex(parameters, i))
-                                    {
-                                        var paramValue = parameters[i + 1];
-                                        valuedParameters.Add((knownParam, paramValue));
-                                        grabbedParamValue = true;
-                                    }
+                                    grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
                                 }
                                 else
                                 {
@@ -92,6 +79,15 @@ namespace CommandComplete
                                     remainingText = paramName;
                                     var parametersAlreadyUsed = valuedParameters.Select(x => x.Param).Concat(flaggedParameters).ToImmutableList();
                                     possibleNextParameters = knownCommand.GetPossibleParametersThatStartWith(remainingText, parametersAlreadyUsed).Select(x => x.Name).ToList();
+                                }
+                                else
+                                {
+                                    //Since it's not last, this is a parameter we don't know about
+                                    //  Default to assuming it takes a value and isn't a flag
+                                    paramName = paramName.TrimStart(knownCommand.ParameterHeader);
+                                    knownParam = new ParameterOption(paramName, true, "Unknown Parameter");
+
+                                    grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
                                 }
                             }
 
@@ -115,6 +111,22 @@ namespace CommandComplete
             }
         }
 
+        private bool PullOutValuedParameter(string[] parameters, IList<(ParameterOption Param, string Value)> valuedParameters, int index, bool grabbedParamValue, ParameterOption knownParam)
+        {
+            if (ParametersHasValueForParamAtIndex(parameters, index))
+            {
+                var paramValue = parameters[index + 1];
+                valuedParameters.Add((knownParam, paramValue));
+                grabbedParamValue = true;
+            }
+            else
+            {
+                valuedParameters.Add((knownParam, string.Empty));
+            }
+
+            return grabbedParamValue;
+        }
+
         private string SanitizeUserText(string userText)
         {
             return userText?.TrimStart() ?? string.Empty;
@@ -127,7 +139,10 @@ namespace CommandComplete
 
         private bool ParametersHasValueForParamAtIndex(string[] parameters, int index)
         {
-            return (parameters.Length >= index + 1);
+            int lastIndexOfParameters = (parameters.Length - 1);
+            var indexOfParameterToLookFor = (index + 1);
+
+            return lastIndexOfParameters >= indexOfParameterToLookFor;
         }
 
         private bool IndexIsForLastParameter(int i, string[] parameters)
