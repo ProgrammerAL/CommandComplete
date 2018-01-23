@@ -11,8 +11,6 @@
     <Product>CommandComplete</Product>
     <AssemblyName>CommandComplete</AssemblyName>
     <RootNamespace>CommandComplete</RootNamespace>
-    <Version>0.0.1</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
