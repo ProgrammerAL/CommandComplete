@@ -27,7 +27,7 @@ namespace CommandComplete.UnitTests
         }
 
         [Fact]
-        public void WhenParameterDOesNotHaveValue_AssertParameterFoundWithNoValue()
+        public void WhenParameterDoesNotHaveValue_AssertParameterFoundWithNoValue()
         {
             var commandCache = GenerateCommandCache();
             var parser = new CommandLineParser();
@@ -47,6 +47,18 @@ namespace CommandComplete.UnitTests
 
             Assert.True(result.ThinkWeHaveSomething);
             Assert.Equal(2, result.PossibleTextsToAutofill.Count);
+        }
+
+
+        [Fact]
+        public void WhenEnteredCommandNameWithNoSpace_AssertCommandFound()
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine("Command1", commandCache);
+
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal("Command1", result.Command.Name);
         }
 
         [Theory]

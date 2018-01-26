@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandComplete", "CommandComplete\CommandComplete.csproj", "{9280CFB0-1F22-4936-B5F6-ED4F0B4ED31C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandComplete.UnitTests", "CommandComplete.UnitTests\CommandComplete.UnitTests.csproj", "{7AAC1094-F71A-4639-9EAB-5ACD97180D32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandComplete.ConsoleTestClient", "CommandComplete.ConsoleTestClient\CommandComplete.ConsoleTestClient.csproj", "{753196B3-AA12-47A8-A10E-DE676DF8F799}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7AAC1094-F71A-4639-9EAB-5ACD97180D32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AAC1094-F71A-4639-9EAB-5ACD97180D32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AAC1094-F71A-4639-9EAB-5ACD97180D32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{753196B3-AA12-47A8-A10E-DE676DF8F799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{753196B3-AA12-47A8-A10E-DE676DF8F799}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{753196B3-AA12-47A8-A10E-DE676DF8F799}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{753196B3-AA12-47A8-A10E-DE676DF8F799}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

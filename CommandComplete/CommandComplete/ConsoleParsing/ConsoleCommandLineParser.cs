@@ -21,6 +21,7 @@ namespace CommandComplete.ConsoleParsing
                 var nextKey = console.GetGetKey(true);
                 if (nextKey.Key == ConsoleKey.Enter)
                 {
+                    console.Write(Environment.NewLine);
                     isParsingFromCommandLine = false;
                 }
                 else if (nextKey.Key == ConsoleKey.Backspace)

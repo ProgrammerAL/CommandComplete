@@ -24,8 +24,13 @@ namespace CommandComplete
                 //Don't have a command set yet, so try to find one that matches 
                 var possibleCommandNames = commandsCache.PossibleCommands
                                                     .Where(x => x.Name.StartsWith(sanitizedText, StringComparison.OrdinalIgnoreCase))
-                                                    .Select(x => x.Name);
-                return new ParseCommandLineResult(null, null, null, sanitizedText, possibleCommandNames);
+                                                    .Select(x => x.Name)
+                                                    .ToList();
+
+                var existingCommand = commandsCache.PossibleCommands
+                                                   .FirstOrDefault(command => command.Name.Equals(sanitizedText, StringComparison.OrdinalIgnoreCase));
+
+                return new ParseCommandLineResult(existingCommand, null, null, sanitizedText, possibleCommandNames);
             }
             else
             {
