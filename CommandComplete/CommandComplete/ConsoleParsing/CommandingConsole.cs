@@ -20,7 +20,7 @@ namespace CommandComplete.ConsoleParsing
         {
             for (int i = 0; i < lengthToDelete; i++)
             {
-                Console.Write("\b");
+                Console.Write("\b \b");
             }
         }
 
