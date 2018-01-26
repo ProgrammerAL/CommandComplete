@@ -85,9 +85,12 @@ namespace CommandComplete.ConsoleParsing
         private void TrimEndCharacters(StringBuilder builder, ICommandingConsole console, int charactersToRemove)
         {
             var indexToStartRemoving = builder.Length - charactersToRemove;
-            builder.Remove(indexToStartRemoving, charactersToRemove);
 
-            console.TrimEndCharacters(charactersToRemove);
+            if (indexToStartRemoving >= 0)
+            {
+                builder.Remove(indexToStartRemoving, charactersToRemove);
+                console.TrimEndCharacters(charactersToRemove);
+            }
         }
 
         private string GetTextToAddToConsoleAtTabCount(ParseCommandLineResult previousParseResult, int tabbedCount)

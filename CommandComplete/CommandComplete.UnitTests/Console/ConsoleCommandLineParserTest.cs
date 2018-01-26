@@ -120,6 +120,37 @@ namespace CommandComplete.UnitTests.Console
         }
 
         [Fact]
+        public void WhenBackspacePressedManyTimes_AssertTextEmpty()
+        {
+            var commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\b', ConsoleKey.Backspace, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            Assert.Equal(string.Empty, result.RemainingText);
+        }
+
+        [Fact]
         public void WhenParsingTabbedInputMultipleTimes_AssertTabResult()
         {
             var commandCache = GenerateCommandCache();

@@ -48,8 +48,7 @@ namespace CommandComplete.UnitTests
             Assert.True(result.ThinkWeHaveSomething);
             Assert.Equal(2, result.PossibleTextsToAutofill.Count);
         }
-
-
+        
         [Fact]
         public void WhenEnteredCommandNameWithNoSpace_AssertCommandFound()
         {
