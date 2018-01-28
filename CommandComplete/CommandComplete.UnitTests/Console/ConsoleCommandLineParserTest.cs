@@ -83,6 +83,37 @@ namespace CommandComplete.UnitTests.Console
         }
 
         [Fact]
+        public void WhenCommandEnteredAndTabbingForParam_AssertParamShowed()
+        {
+            var commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false),
+
+                new ConsoleKeyInfo('\t', ConsoleKey.Tab, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal("Command1", result.Command.Name);
+            Assert.Empty(result.FlaggedParameters);
+            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+            Assert.Equal(string.Empty, result.RemainingText);
+        }
+
+        [Fact]
         public void WhenBackspacePressed_AssertTextRemoved()
         {
             var commandCache = GenerateCommandCache();

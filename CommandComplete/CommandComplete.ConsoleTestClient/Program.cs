@@ -24,7 +24,11 @@ namespace CommandComplete.ConsoleTestClient
 
             foreach (var commandName in commandNames)
             {
-                var parameters = Array.Empty<ParameterOption>();
+                var parameters = new[] {
+                    new ParameterOption("Param1", true, "Parameter 1"),
+                    new ParameterOption("Param2", true, "Parameter 2"),
+                    new ParameterOption("Param3", true, "Parameter 3"),
+                };
                 var command = new Command(commandName, '-', string.Empty, parameters);
 
                 commandCache.AddCommand(command);

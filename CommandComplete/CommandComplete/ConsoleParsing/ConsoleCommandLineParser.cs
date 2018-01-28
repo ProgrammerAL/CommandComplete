@@ -40,14 +40,15 @@ namespace CommandComplete.ConsoleParsing
                             var previousTextTabbedIntoConsole = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount - 1);
                             charactersToRemove = previousTextTabbedIntoConsole.Length;
                         }
-                        else if (previousParseResult.Command != null)
-                        {
-                            //This means we're hitting tab for a parameter, not a command
-                            // But we only check this the first time the Tab is pressed. 
-                            //      Because we don't want to remove the Header character
-                            //  So check for the Header character, like a -
-                            charactersToRemove--;
-                        }
+
+                        //else if (previousParseResult.Command != null)
+                        //{
+                        //    //This means we're hitting tab for a parameter, not a command
+                        //    // But we only check this the first time the Tab is pressed. 
+                        //    //      Because we don't want to remove the Header character
+                        //    //  So check for the Header character, like a -
+                        //    charactersToRemove--;
+                        //}
 
                         var textToAppend = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount);
                         if (!string.IsNullOrEmpty(textToAppend))
@@ -86,7 +87,7 @@ namespace CommandComplete.ConsoleParsing
         {
             var indexToStartRemoving = builder.Length - charactersToRemove;
 
-            if (indexToStartRemoving >= 0)
+            if (indexToStartRemoving >= 0 && charactersToRemove > 0)
             {
                 builder.Remove(indexToStartRemoving, charactersToRemove);
                 console.TrimEndCharacters(charactersToRemove);
@@ -97,8 +98,18 @@ namespace CommandComplete.ConsoleParsing
         {
             if (previousParseResult.PossibleTextsToAutofill.Any())
             {
+                var isTabbingForParameter = previousParseResult.Command != null;
+
                 var indextOfNextText = tabbedCount % previousParseResult.PossibleTextsToAutofill.Count;
-                return previousParseResult.PossibleTextsToAutofill[indextOfNextText];
+
+                var result = previousParseResult.PossibleTextsToAutofill[indextOfNextText];
+
+                if (isTabbingForParameter)
+                {
+                    result = previousParseResult.Command.ParameterHeader + result;
+                }
+
+                return result;
             }
             else
             {
