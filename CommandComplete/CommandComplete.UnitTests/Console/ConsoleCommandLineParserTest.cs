@@ -318,6 +318,111 @@ namespace CommandComplete.UnitTests.Console
             Assert.Equal("val", result.ValuedParameters.Single().Value);
             Assert.Equal(string.Empty, result.RemainingText);
         }
+        
+        [Fact]
+        public void WhenHittingEscapeOnCommand_AssertCommandNameCleared()
+        {
+            var commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('\u0027', ConsoleKey.Escape, false, false, false),
+
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            Assert.Null(result.Command);
+            Assert.Empty(result.FlaggedParameters);
+            Assert.Empty(result.ValuedParameters);
+            Assert.Equal(string.Empty, result.RemainingText);
+        }
+
+        [Fact]
+        public void WhenHittingEscapeOnParameterName_AssertParameterNameCleared()
+        {
+            var commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false),
+
+                new ConsoleKeyInfo('-', ConsoleKey.OemMinus, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('b', ConsoleKey.B, false, false, false),
+                new ConsoleKeyInfo('c', ConsoleKey.C, false, false, false),
+                new ConsoleKeyInfo('\u0027', ConsoleKey.Escape, false, false, false),
+
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            Assert.Equal("Command1", result.Command.Name);
+            Assert.Empty(result.FlaggedParameters);
+            Assert.Empty(result.ValuedParameters);
+            Assert.Equal(string.Empty, result.RemainingText);
+        }
+
+        [Fact]
+        public void WhenHittingEscapeOnParameterValue_AssertParameterValueCleared()
+        {
+            var commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false),
+
+                new ConsoleKeyInfo('-', ConsoleKey.OemMinus, false, false, false),
+                new ConsoleKeyInfo('p', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.B, false, false, false),
+                new ConsoleKeyInfo('r', ConsoleKey.C, false, false, false),
+                new ConsoleKeyInfo('\t', ConsoleKey.Tab, false, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.Spacebar, false, false, false),
+
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('e', ConsoleKey.E, false, false, false),
+                new ConsoleKeyInfo('f', ConsoleKey.F, false, false, false),
+                new ConsoleKeyInfo('\u0027', ConsoleKey.Escape, false, false, false),
+
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            Assert.Equal("Command1", result.Command.Name);
+            Assert.Empty(result.FlaggedParameters);
+            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+            Assert.Equal(string.Empty, result.ValuedParameters.Single().Value);
+            Assert.Equal(string.Empty, result.RemainingText);
+        }
 
         private ICommandCache GenerateCommandCache()
         {

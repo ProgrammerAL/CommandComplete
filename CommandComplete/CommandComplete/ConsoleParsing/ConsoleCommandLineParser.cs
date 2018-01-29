@@ -28,6 +28,10 @@ namespace CommandComplete.ConsoleParsing
                 {
                     TrimEndCharacters(builder, console, 1);
                 }
+                else if (nextKey.Key == ConsoleKey.Escape)
+                {
+                    TrimCurrentCommandPiece(builder, console);
+                }
                 else if (nextKey.Key == ConsoleKey.Tab)
                 {
                     if (previousParseResult.ThinkWeHaveSomething)
@@ -49,15 +53,6 @@ namespace CommandComplete.ConsoleParsing
                             tabbedCount++;
                         }
                     }
-                    //else if(builder.Length == 0)
-                    //{
-                    //    //Nothing in command line. Put a command name on the screen
-                    //    //previousParseResult = new ParseCommandLineResult();
-
-                    //    var firstCommandName = commandCache.PossibleCommands[0].Name;
-                    //    AppendText(builder, console, firstCommandName);
-                    //    tabbedCount++;
-                    //}
                 }
                 else
                 {
@@ -69,6 +64,24 @@ namespace CommandComplete.ConsoleParsing
 
             //Parse one last time to let the caller know exactly what's in the Console screen
             return parser.ParseCommandLine(builder.ToString(), commandCache);
+        }
+
+        private void TrimCurrentCommandPiece(StringBuilder builder, ICommandingConsole console)
+        {
+            //Delete the current part of the command string
+            //  Command Name, parameter name, parameter value, etc
+
+            var currentText = builder.ToString();
+            var lastIndexOfSpace = currentText.LastIndexOf(' ');
+            if (lastIndexOfSpace == -1)
+            {
+                TrimEndCharacters(builder, console, currentText.Length);
+            }
+            else
+            {
+                var charactersToRemove = currentText.Length - lastIndexOfSpace;
+                TrimEndCharacters(builder, console, charactersToRemove);
+            }
         }
 
         private void AppenCharacter(StringBuilder builder, ICommandingConsole console, char keyChar)
