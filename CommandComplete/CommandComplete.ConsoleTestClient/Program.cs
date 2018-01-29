@@ -13,9 +13,23 @@ namespace CommandComplete.ConsoleTestClient
 
             InitCommands(commandCache);
 
-            var consoleCommandLineResult = consoleCommandLineParser.ParseCommandLine(commandCache, console);
+            var result = consoleCommandLineParser.ParseCommandLine(commandCache, console);
 
-            Console.WriteLine($"Chosen Command: {consoleCommandLineResult.Command.Name}");
+            Console.WriteLine($"Chosen Command: {result.Command.Name}");
+
+            Console.WriteLine("Flagged Params:");
+            foreach (var flaggedParam in result.FlaggedParameters)
+            {
+                Console.WriteLine($"\t{flaggedParam.Name}");
+            }
+
+            Console.WriteLine("Valued Params:");
+            foreach (var (parameter, value) in result.ValuedParameters)
+            {
+                Console.WriteLine($"\t{parameter.Name}: {value}");
+            }
+
+            Console.WriteLine($"Remaining Text: {result.RemainingText}");
         }
 
         private static void InitCommands(ICommandCache commandCache)

@@ -10,10 +10,10 @@ namespace CommandComplete.ConsoleParsing
         public ParseCommandLineResult ParseCommandLine(ICommandCache commandCache, ICommandingConsole console)
         {
             var builder = new StringBuilder();
-            var previousParseResult = ParseCommandLineResult.CouldNotParseCommand;
             int tabbedCount = 0;
 
             var parser = new CommandLineParser();
+            var previousParseResult = parser.ParseCommandLine(string.Empty, commandCache);
 
             bool isParsingFromCommandLine = true;
             while (isParsingFromCommandLine)
@@ -41,15 +41,6 @@ namespace CommandComplete.ConsoleParsing
                             charactersToRemove = previousTextTabbedIntoConsole.Length;
                         }
 
-                        //else if (previousParseResult.Command != null)
-                        //{
-                        //    //This means we're hitting tab for a parameter, not a command
-                        //    // But we only check this the first time the Tab is pressed. 
-                        //    //      Because we don't want to remove the Header character
-                        //    //  So check for the Header character, like a -
-                        //    charactersToRemove--;
-                        //}
-
                         var textToAppend = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount);
                         if (!string.IsNullOrEmpty(textToAppend))
                         {
@@ -58,6 +49,15 @@ namespace CommandComplete.ConsoleParsing
                             tabbedCount++;
                         }
                     }
+                    //else if(builder.Length == 0)
+                    //{
+                    //    //Nothing in command line. Put a command name on the screen
+                    //    //previousParseResult = new ParseCommandLineResult();
+
+                    //    var firstCommandName = commandCache.PossibleCommands[0].Name;
+                    //    AppendText(builder, console, firstCommandName);
+                    //    tabbedCount++;
+                    //}
                 }
                 else
                 {

@@ -39,6 +39,32 @@ namespace CommandComplete.UnitTests
         }
 
         [Fact]
+        public void WhenParameterValueHasQuotes_AssertSpaceIncludedInParamValue()
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine("command1 -param1 \"Some Value I Made up\"", commandCache);
+
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
+            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+            Assert.Equal("Some Value I Made up", result.ValuedParameters.Single().Value);
+        }
+        
+        [Fact]
+        public void WhenParameterValueHasQuotesButNotAtEnd_AssertFullTextIncluded()
+        {
+            var commandCache = GenerateCommandCache();
+            var parser = new CommandLineParser();
+            var result = parser.ParseCommandLine("command1 -param1 \"Some Value without end quotes", commandCache);
+
+            Assert.True(result.ThinkWeHaveSomething);
+            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
+            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+            Assert.Equal("Some Value without end quotes", result.ValuedParameters.Single().Value);
+        }
+
+        [Fact]
         public void WhenEnteredCommandName_AssertCommandOptionsFound()
         {
             var commandCache = GenerateCommandCache();

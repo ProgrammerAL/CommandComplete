@@ -8,7 +8,9 @@ namespace CommandComplete
 {
     public class CommandLineParser
     {
-        private const char CommandLineSeparatorChar_Space = ' ';
+        private const char SpaceChar = ' ';
+        private const string DoubleQuote = "\"";
+        private const string EscapedDoubleQuote = "\\\"";
 
         public ParseCommandLineResult ParseCommandLine(string userTextSoFar, ICommandCache commandsCache)
         {
@@ -18,19 +20,25 @@ namespace CommandComplete
             // - If has space, try to find command and then try to use parameter
 
             var sanitizedText = SanitizeUserText(userTextSoFar);
-            var spaceIndex = sanitizedText.IndexOf(CommandLineSeparatorChar_Space);
+            var spaceIndex = sanitizedText.IndexOf(SpaceChar);
             if (!SpaceCharacterFound(spaceIndex))
             {
                 //Don't have a command set yet, so try to find one that matches 
                 var possibleCommandNames = commandsCache.PossibleCommands
                                                     .Where(x => x.Name.StartsWith(sanitizedText, StringComparison.OrdinalIgnoreCase))
                                                     .Select(x => x.Name)
-                                                    .ToList();
+                                                    .OrderBy(x => x);
 
                 var existingCommand = commandsCache.PossibleCommands
                                                    .FirstOrDefault(command => command.Name.Equals(sanitizedText, StringComparison.OrdinalIgnoreCase));
 
-                return new ParseCommandLineResult(existingCommand, null, null, sanitizedText, possibleCommandNames);
+                var remainingText = sanitizedText;
+                if (existingCommand != null)
+                {
+                    remainingText = string.Empty;
+                }
+
+                return new ParseCommandLineResult(existingCommand, null, null, remainingText, possibleCommandNames);
             }
             else
             {
@@ -48,7 +56,7 @@ namespace CommandComplete
                 else
                 {
                     var textAfterCommand = sanitizedText.Substring(spaceIndex + 1);
-                    var parameters = textAfterCommand.Split(CommandLineSeparatorChar_Space);
+                    var parameters = SplitParameters(textAfterCommand, SpaceChar);
 
                     IList<(ParameterOption Param, string Value)> valuedParameters = new List<(ParameterOption Param, string Value)>();
                     IList<ParameterOption> flaggedParameters = new List<ParameterOption>();
@@ -58,7 +66,7 @@ namespace CommandComplete
                     if (parameters.Any())
                     {
                         int i = 0;
-                        while (i < parameters.Length)
+                        while (i < parameters.Count)
                         {
                             bool grabbedParamValue = false;
                             var paramName = parameters[i];
@@ -116,7 +124,74 @@ namespace CommandComplete
             }
         }
 
-        private bool PullOutValuedParameter(string[] parameters, IList<(ParameterOption Param, string Value)> valuedParameters, int index, bool grabbedParamValue, ParameterOption knownParam)
+        private IImmutableList<string> SplitParameters(string textAfterCommand, char commandLineSeparatorChar_Space)
+        {
+            var spaceSplitParameters = textAfterCommand.Split(SpaceChar);
+            var paramList = new List<string>(spaceSplitParameters.Length);
+
+            bool itemInQuotes = false;
+            var textInQuotes = new StringBuilder();
+
+            foreach (var paramText in spaceSplitParameters)
+            {
+                if (itemInQuotes)
+                {
+                    textInQuotes.Append(SpaceChar);
+                    textInQuotes.Append(paramText);
+
+                    var itemLeftQuotes = StringEndsWithUnescapedDoubleQuote(paramText);
+                    if(itemLeftQuotes)
+                    {
+                        var textWithoutDoubleQuote = GetTextWithoutDoubleQuoteCharAtEnd(textInQuotes.ToString());
+                        paramList.Add(textWithoutDoubleQuote);
+                        itemInQuotes = false;
+                        textInQuotes.Clear();
+                    }
+                }
+                else
+                {
+                    itemInQuotes = StringStartsWithUnescapedDoubleQuote(paramText);
+
+                    if (itemInQuotes)
+                    {
+                        var textWithoutDoubleQuote = paramText.Substring(1);
+                        textInQuotes.Clear();
+                        textInQuotes.Append(textWithoutDoubleQuote);
+                    }
+                    else
+                    {
+                        paramList.Add(paramText);
+                    }
+                }
+            }
+
+            //Double quotes are missing from end of string. I guess include this at the end
+            if (textInQuotes.Length > 0)
+            {
+                paramList.Add(textInQuotes.ToString());
+            }
+
+            return paramList.ToImmutableList();
+        }
+
+        private string GetTextWithoutDoubleQuoteCharAtEnd(string paramText)
+        {
+            var lengthToLastCharNotCountingDoubleQuote = paramText.Length - 1;
+            return paramText.Substring(0, lengthToLastCharNotCountingDoubleQuote);
+        }
+
+        private bool StringStartsWithUnescapedDoubleQuote(string paramText)
+        {
+            return paramText.StartsWith(DoubleQuote, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool StringEndsWithUnescapedDoubleQuote(string paramText)
+        {
+            return paramText.EndsWith(DoubleQuote, StringComparison.OrdinalIgnoreCase)
+                && !paramText.EndsWith(EscapedDoubleQuote, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool PullOutValuedParameter(IImmutableList<string> parameters, IList<(ParameterOption Param, string Value)> valuedParameters, int index, bool grabbedParamValue, ParameterOption knownParam)
         {
             if (ParametersHasValueForParamAtIndex(parameters, index))
             {
@@ -142,17 +217,17 @@ namespace CommandComplete
             return spaceIndex > -1;
         }
 
-        private bool ParametersHasValueForParamAtIndex(string[] parameters, int index)
+        private bool ParametersHasValueForParamAtIndex(IImmutableList<string> parameters, int index)
         {
-            int lastIndexOfParameters = (parameters.Length - 1);
+            int lastIndexOfParameters = (parameters.Count - 1);
             var indexOfParameterToLookFor = (index + 1);
 
             return lastIndexOfParameters >= indexOfParameterToLookFor;
         }
 
-        private bool IndexIsForLastParameter(int i, string[] parameters)
+        private bool IndexIsForLastParameter(int i, IImmutableList<string> parameters)
         {
-            return i == (parameters.Length - 1);
+            return i == (parameters.Count - 1);
         }
     }
 }
