@@ -42,6 +42,9 @@ namespace CommandComplete.ConsoleTestClient
                     new ParameterOption("Param1", true, "Parameter 1"),
                     new ParameterOption("Param2", true, "Parameter 2"),
                     new ParameterOption("Param3", true, "Parameter 3"),
+
+                    new ParameterOption("Flag1", false, "Flag 1"),
+                    new ParameterOption("Flag2", false, "Flag 2"),
                 };
                 var command = new Command(commandName, '-', string.Empty, parameters);
 
