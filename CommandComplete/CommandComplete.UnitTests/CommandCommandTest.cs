@@ -23,7 +23,7 @@ namespace CommandComplete.UnitTests
         [InlineData("\bSomeName")]
         public void WhenCreatingCommandWithInvalidName_AssertException(string name)
         {
-            Assert.Throws<ArgumentException>(() => new Command(name, '-', null, null));
+            Should.Throw<ArgumentException>(() => new Command(name, '-', null, null));
         }
 
         [Fact]

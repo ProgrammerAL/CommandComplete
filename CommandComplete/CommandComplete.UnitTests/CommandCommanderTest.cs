@@ -1,3 +1,4 @@
+using Shouldly;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
@@ -11,7 +12,7 @@ namespace CommandComplete.UnitTests
         {
             var commander = new CommandCache();
 
-            Assert.Throws<ArgumentNullException>(() => commander.AddCommand(null));
+            Should.Throw<ArgumentNullException>(() => commander.AddCommand(null));
         }
 
         [Fact]
@@ -24,7 +25,7 @@ namespace CommandComplete.UnitTests
 
             commander.AddCommand(command1);
 
-            Assert.Throws<Exception>(() => commander.AddCommand(command2));
+            Should.Throw<Exception>(() => commander.AddCommand(command2));
         }
     }
 }
