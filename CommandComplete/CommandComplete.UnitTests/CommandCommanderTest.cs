@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace CommandComplete.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class ConsoleCommanderTest
     {
         [Fact]

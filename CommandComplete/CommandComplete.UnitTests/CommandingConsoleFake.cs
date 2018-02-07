@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace CommandComplete.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class CommandingConsoleFake : ICommandingConsole
     {
         private readonly StringBuilder _builder;

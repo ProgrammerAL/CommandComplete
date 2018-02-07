@@ -4,9 +4,11 @@ using System.Text;
 using System.Linq;
 using Xunit;
 using CommandComplete;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CommandComplete.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class CommandLineParserTest
     {
         [Fact]

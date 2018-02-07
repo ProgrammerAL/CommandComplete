@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Xunit;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CommandComplete.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class CommandCommandTest
     {
         [Theory]
