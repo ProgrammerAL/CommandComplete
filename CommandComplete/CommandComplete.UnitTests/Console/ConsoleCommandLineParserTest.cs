@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Xunit;
-using System.Diagnostics.CodeAnalysis;
+using Shouldly;
 
 namespace CommandComplete.UnitTests.Console
 {
-    [ExcludeFromCodeCoverage]
     public class ConsoleCommandLineParserTest
     {
         private readonly CommandingConsoleFake _commandingConsoleSubstitute;
@@ -44,11 +43,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Empty(result.ValuedParameters);
-            Assert.Equal("-t", result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.ShouldBeEmpty();
+            result.RemainingText.ShouldBe("-t");
         }
 
         [Fact]
@@ -77,11 +76,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("TestParam1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("TestParam1");
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -108,11 +107,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -136,11 +135,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Empty(result.ValuedParameters);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.ShouldBeEmpty();
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -157,11 +156,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Empty(result.ValuedParameters);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.ShouldBeEmpty();
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -194,11 +193,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -229,7 +228,7 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -273,12 +272,12 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("Param3", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal("val", result.ValuedParameters.Single().Value);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param3");
+            result.ValuedParameters.Single().Value.ShouldBe("val");
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -313,14 +312,14 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("a", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal("val", result.ValuedParameters.Single().Value);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("a");
+            result.ValuedParameters.Single().Value.ShouldBe("val");
+            result.RemainingText.ShouldBeEmpty();
         }
-        
+
         [Fact]
         public void WhenHittingEscapeOnCommand_AssertCommandNameCleared()
         {
@@ -343,10 +342,10 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.Null(result.Command);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Empty(result.ValuedParameters);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.Command.ShouldBeNull();
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.ShouldBeEmpty();
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -378,10 +377,10 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Empty(result.ValuedParameters);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.ShouldBeEmpty();
+            result.RemainingText.ShouldBeEmpty();
         }
 
         [Fact]
@@ -419,11 +418,11 @@ namespace CommandComplete.UnitTests.Console
             var parser = new ConsoleCommandLineParser();
             var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
-            Assert.Equal("Command1", result.Command.Name);
-            Assert.Empty(result.FlaggedParameters);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal(string.Empty, result.ValuedParameters.Single().Value);
-            Assert.Equal(string.Empty, result.RemainingText);
+            result.Command.Name.ShouldBe("Command1");
+            result.FlaggedParameters.ShouldBeEmpty();
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.ValuedParameters.Single().Value.ShouldBeEmpty();
+            result.RemainingText.ShouldBeEmpty();
         }
 
         private ICommandCache GenerateCommandCache()

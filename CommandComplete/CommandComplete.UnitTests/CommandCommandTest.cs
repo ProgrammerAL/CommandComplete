@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Xunit;
-using System.Diagnostics.CodeAnalysis;
+using Shouldly;
 
 namespace CommandComplete.UnitTests
 {
-    [ExcludeFromCodeCoverage]
     public class CommandCommandTest
     {
         [Theory]
@@ -32,9 +31,9 @@ namespace CommandComplete.UnitTests
         {
             var command = new Command("SomeCommand", '-', "Help Text", new[] { new ParameterOption("Param1" , true, "Parameter 1") });
 
-            Assert.Equal("SomeCommand", command.Name);
-            Assert.Equal("Help Text", command.HelpText);
-            Assert.Equal("Param1", command.Parameters.Single().Name);
+            command.Name.ShouldBe("SomeCommand");
+            command.HelpText.ShouldBe("Help Text");
+            command.Parameters.Single().Name.ShouldBe("Param1");
         }
     }
 }

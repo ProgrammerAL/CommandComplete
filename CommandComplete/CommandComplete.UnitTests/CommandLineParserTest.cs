@@ -4,11 +4,10 @@ using System.Text;
 using System.Linq;
 using Xunit;
 using CommandComplete;
-using System.Diagnostics.CodeAnalysis;
+using Shouldly;
 
 namespace CommandComplete.UnitTests
 {
-    [ExcludeFromCodeCoverage]
     public class CommandLineParserTest
     {
         [Fact]
@@ -18,14 +17,12 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("command1 -flagParam1 -param1 value1 -para", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
-            Assert.Equal("FlagParam1", result.FlaggedParameters.Single().Name);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-
-            Assert.Equal("-para", result.RemainingText);
-
-            Assert.Equal(2, result.PossibleTextsToAutofill.Count);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("command1", StringCompareShould.IgnoreCase);
+            result.FlaggedParameters.Single().Name.ShouldBe("FlagParam1");
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.RemainingText.ShouldBe("-para");
+            result.PossibleTextsToAutofill.Count.ShouldBe(2);
         }
 
         [Fact]
@@ -35,9 +32,9 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("command1 -param1", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
+            result.ThinkWeHaveSomething.ShouldBe(true);
+            result.Command.Name.ShouldBe("command1", StringCompareShould.IgnoreCase);
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
         }
 
         [Fact]
@@ -47,12 +44,12 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("command1 -param1 \"Some Value I Made up\"", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal("Some Value I Made up", result.ValuedParameters.Single().Value);
+            result.ThinkWeHaveSomething.ShouldBe(true);
+            result.Command.Name.ShouldBe("command1", StringCompareShould.IgnoreCase);
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.ValuedParameters.Single().Value.ShouldBe("Some Value I Made up");
         }
-        
+
         [Fact]
         public void WhenParameterValueHasQuotesButNotAtEnd_AssertFullTextIncluded()
         {
@@ -60,10 +57,10 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("command1 -param1 \"Some Value without end quotes", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("command1", result.Command.Name, ignoreCase: true);
-            Assert.Equal("Param1", result.ValuedParameters.Single().Parameter.Name);
-            Assert.Equal("Some Value without end quotes", result.ValuedParameters.Single().Value);
+            result.ThinkWeHaveSomething.ShouldBe(true);
+            result.Command.Name.ShouldBe("command1", StringCompareShould.IgnoreCase);
+            result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
+            result.ValuedParameters.Single().Value.ShouldBe("Some Value without end quotes");
         }
 
         [Fact]
@@ -73,10 +70,10 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("comman", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal(2, result.PossibleTextsToAutofill.Count);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.PossibleTextsToAutofill.Count.ShouldBe(2);
         }
-        
+
         [Fact]
         public void WhenEnteredCommandNameWithNoSpace_AssertCommandFound()
         {
@@ -84,8 +81,8 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("Command1", commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
-            Assert.Equal("Command1", result.Command.Name);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.Command.Name.ShouldBe("Command1");
         }
 
         [Theory]
@@ -98,7 +95,7 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine(commandText, commandCache);
 
-            Assert.True(result.ThinkWeHaveSomething);
+            result.ThinkWeHaveSomething.ShouldBeTrue();
         }
 
         [Fact]
@@ -108,7 +105,7 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("jshdb ", commandCache);
 
-            Assert.Equal(ParseCommandLineResult.CouldNotParseCommand, result);
+            result.ShouldBe(ParseCommandLineResult.CouldNotParseCommand);
         }
 
         private ICommandCache GenerateCommandCache()

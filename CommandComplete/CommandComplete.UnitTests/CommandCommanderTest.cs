@@ -4,7 +4,6 @@ using Xunit;
 
 namespace CommandComplete.UnitTests
 {
-    [ExcludeFromCodeCoverage]
     public class ConsoleCommanderTest
     {
         [Fact]
