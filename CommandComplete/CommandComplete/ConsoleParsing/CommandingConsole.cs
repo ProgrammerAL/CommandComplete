@@ -24,9 +24,9 @@ namespace CommandComplete.ConsoleParsing
             }
         }
 
-        public void Write(string text)
+        public void Write(string textToAddToConsole)
         {
-            Console.Write(text);
+            Console.Write(textToAddToConsole);
         }
 
         public void AppendCharacter(char keyChar)

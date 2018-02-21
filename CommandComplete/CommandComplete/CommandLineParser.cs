@@ -56,75 +56,81 @@ namespace CommandComplete
                 else
                 {
                     var textAfterCommand = sanitizedText.Substring(spaceIndex + 1);
-                    var parameters = SplitParameters(textAfterCommand, SpaceChar);
-
-                    IList<(ParameterOption Param, string Value)> valuedParameters = new List<(ParameterOption Param, string Value)>();
-                    IList<ParameterOption> flaggedParameters = new List<ParameterOption>();
-                    IList<string> possibleNextParameters = new List<string>();
-                    string remainingText = string.Empty;
+                    var parameters = SplitParameters(textAfterCommand);
 
                     if (parameters.Any())
                     {
-                        int i = 0;
-                        while (i < parameters.Count)
-                        {
-                            bool grabbedParamValue = false;
-                            var paramName = parameters[i];
-                            if (knownCommand.TryGetParameterWithNameIgnoringHeader(paramName, out ParameterOption knownParam))
-                            {
-                                //Then we already know about this param
-                                if (knownParam.TakesInputValue)
-                                {
-                                    grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
-                                }
-                                else
-                                {
-                                    flaggedParameters.Add(knownParam);
-                                }
-                            }
-                            else
-                            {
-                                //We don't know about the parameter with the name.
-                                //  Maybe someone forgot about it in the list, or user hasn't typed in the full text because it at the end.
-                                if (IndexIsForLastParameter(i, parameters))
-                                {
-                                    //If we're on the last param value user is probably mid-way through typing it
-                                    remainingText = paramName;
-                                    var parametersAlreadyUsed = valuedParameters.Select(x => x.Param).Concat(flaggedParameters).ToImmutableList();
-                                    possibleNextParameters = knownCommand.GetPossibleParametersThatStartWith(remainingText, parametersAlreadyUsed).Select(x => x.Name).ToList();
-                                }
-                                else
-                                {
-                                    //Since it's not last, this is a parameter we don't know about
-                                    //  Default to assuming it takes a value and isn't a flag
-                                    paramName = paramName.TrimStart(knownCommand.ParameterHeader);
-                                    knownParam = new ParameterOption(paramName, true, "Unknown Parameter");
-
-                                    grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
-                                }
-                            }
-
-                            if (grabbedParamValue)
-                            {
-                                i += 2;
-                            }
-                            else
-                            {
-                                i++;
-                            }
-                        }
+                        return ParseCommandLineResultFromParameters(knownCommand, parameters);
                     }
-
-                    return new ParseCommandLineResult(knownCommand,
-                        flaggedParameters,
-                        valuedParameters,
-                        remainingText,
-                        possibleNextParameters);
+                    else
+                    {
+                        return new ParseCommandLineResult(knownCommand,
+                            new List<ParameterOption>(),
+                            new List<(ParameterOption Param, string Value)>(),
+                            string.Empty,
+                            new List<string>());
+                    }
                 }
             }
         }
 
-        private IImmutableList<string> SplitParameters(string textAfterCommand, char commandLineSeparatorChar_Space)
+        private ParseCommandLineResult ParseCommandLineResultFromParameters(Command knownCommand, IImmutableList<string> parameters)
+        {
+            var valuedParameters = new List<(ParameterOption Param, string Value)>();
+            var flaggedParameters = new List<ParameterOption>();
+            var possibleNextParameters = new List<string>();
+            string remainingText = string.Empty;
+
+            int i = 0;
+            while (i < parameters.Count)
+            {
+                bool grabbedParamValue = false;
+                var paramName = parameters[i];
+                if (knownCommand.TryGetParameterWithNameIgnoringHeader(paramName, out ParameterOption knownParam))
+                {
+                    //Then we already know about this param
+                    if (knownParam.TakesInputValue)
+                    {
+                        grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
+                    }
+                    else
+                    {
+                        flaggedParameters.Add(knownParam);
+                    }
+                }
+                else
+                {
+                    //We don't know about the parameter with the name.
+                    //  Maybe someone forgot about it in the list, or user hasn't typed in the full text because it at the end.
+                    if (IndexIsForLastParameter(i, parameters))
+                    {
+                        //If we're on the last param value user is probably mid-way through typing it
+                        remainingText = paramName;
+                        var parametersAlreadyUsed = valuedParameters.Select(x => x.Param).Concat(flaggedParameters).ToImmutableList();
+                        possibleNextParameters = knownCommand.GetPossibleParametersThatStartWith(remainingText, parametersAlreadyUsed).Select(x => x.Name).ToList();
+                    }
+                    else
+                    {
+                        //Since it's not last, this is a parameter we don't know about
+                        //  Default to assuming it takes a value and isn't a flag
+                        paramName = paramName.TrimStart(knownCommand.ParameterHeader);
+                        knownParam = new ParameterOption(paramName, true, "Unknown Parameter");
+
+                        grabbedParamValue = PullOutValuedParameter(parameters, valuedParameters, i, grabbedParamValue, knownParam);
+                    }
+                }
+
+                i += grabbedParamValue ? 2 : 1;
+            }
+
+            return new ParseCommandLineResult(knownCommand,
+                            flaggedParameters,
+                            valuedParameters,
+                            remainingText,
+                            possibleNextParameters);
+        }
+
+        private IImmutableList<string> SplitParameters(string textAfterCommand)
         {
             var spaceSplitParameters = textAfterCommand.Split(SpaceChar);
             var paramList = new List<string>(spaceSplitParameters.Length);
@@ -140,7 +146,7 @@ namespace CommandComplete
                     textInQuotes.Append(paramText);
 
                     var itemLeftQuotes = StringEndsWithUnescapedDoubleQuote(paramText);
-                    if(itemLeftQuotes)
+                    if (itemLeftQuotes)
                     {
                         var textWithoutDoubleQuote = GetTextWithoutDoubleQuoteCharAtEnd(textInQuotes.ToString());
                         paramList.Add(textWithoutDoubleQuote);

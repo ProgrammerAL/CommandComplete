@@ -22,7 +22,7 @@ namespace CommandComplete
 
             if (PossibleCommands.Any(x => x.Name == command.Name))
             {
-                throw new Exception($"Can't add command with duplicate key of {command.Name}");
+                throw new DuplucateCommandNameException($"Can't add command with duplicate key of {command.Name}");
             }
 
             PossibleCommands = PossibleCommands.Add(command);

@@ -30,10 +30,10 @@ namespace CommandComplete.UnitTests
             return nextKeyInfo;
         }
 
-        public void TrimEndCharacters(int length)
+        public void TrimEndCharacters(int lengthToDelete)
         {
-            var indexToStartRemoving = _builder.Length - length;
-            _builder.Remove(indexToStartRemoving, length);
+            var indexToStartRemoving = _builder.Length - lengthToDelete;
+            _builder.Remove(indexToStartRemoving, lengthToDelete);
         }
 
         public void Write(string textToAddToConsole)
