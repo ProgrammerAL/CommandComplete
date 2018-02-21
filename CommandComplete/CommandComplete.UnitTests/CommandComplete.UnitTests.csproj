@@ -31,5 +31,10 @@
   <ItemGroup>
     <ProjectReference Include="..\CommandComplete\CommandComplete.csproj" />
   </ItemGroup>
-
+  
+  <PropertyGroup>
+    <!-- Exclude the project from analysis -->
+    <SonarQubeExclude>true</SonarQubeExclude>
+  </PropertyGroup>
+  
 </Project>
