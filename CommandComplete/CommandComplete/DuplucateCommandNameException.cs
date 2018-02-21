@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace CommandComplete
 {
     [Serializable]
-    internal class DuplucateCommandNameException : Exception
+    public class DuplucateCommandNameException : Exception
     {
         public DuplucateCommandNameException(string commandName)
         {

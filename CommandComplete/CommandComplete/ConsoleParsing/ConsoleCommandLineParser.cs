@@ -19,51 +19,58 @@ namespace CommandComplete.ConsoleParsing
             while (isParsingFromCommandLine)
             {
                 var nextKey = console.GetGetKey(true);
-                if (nextKey.Key == ConsoleKey.Enter)
-                {
-                    console.Write(Environment.NewLine);
-                    isParsingFromCommandLine = false;
-                }
-                else if (nextKey.Key == ConsoleKey.Backspace)
-                {
-                    TrimEndCharacters(builder, console, 1);
-                }
-                else if (nextKey.Key == ConsoleKey.Escape)
-                {
-                    TrimCurrentCommandPiece(builder, console);
-                }
-                else if (nextKey.Key == ConsoleKey.Tab)
-                {
-                    if (previousParseResult.ThinkWeHaveSomething)
-                    {
-                        int charactersToRemove = previousParseResult.RemainingText.Length;
 
-                        if (tabbedCount > 0)
-                        {
-                            //User hit tab before this instance, so remove the text they previously entered before adding something else
-                            var previousTextTabbedIntoConsole = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount - 1);
-                            charactersToRemove = previousTextTabbedIntoConsole.Length;
-                        }
-
-                        var textToAppend = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount);
-                        if (!string.IsNullOrEmpty(textToAppend))
-                        {
-                            TrimEndCharacters(builder, console, charactersToRemove);
-                            AppendText(builder, console, textToAppend);
-                            tabbedCount++;
-                        }
-                    }
-                }
-                else
+                switch (nextKey.Key)
                 {
-                    AppenCharacter(builder, console, nextKey.KeyChar);
-                    previousParseResult = parser.ParseCommandLine(builder.ToString(), commandCache);
-                    tabbedCount = 0;
+                    case ConsoleKey.Enter:
+                        console.Write(Environment.NewLine);
+                        isParsingFromCommandLine = false;
+                        break;
+                    case ConsoleKey.Backspace:
+                        TrimEndCharacters(builder, console, 1);
+                        break;
+                    case ConsoleKey.Escape:
+                        TrimCurrentCommandPiece(builder, console);
+                        break;
+                    case ConsoleKey.Tab:
+                        tabbedCount = AttemptToParseCommandInConsole(previousParseResult, tabbedCount, builder, console);
+                        break;
+                    default:
+                        AppenCharacter(builder, console, nextKey.KeyChar);
+                        previousParseResult = parser.ParseCommandLine(builder.ToString(), commandCache);
+                        tabbedCount = 0;
+                        break;
                 }
             }
 
             //Parse one last time to let the caller know exactly what's in the Console screen
             return parser.ParseCommandLine(builder.ToString(), commandCache);
+        }
+
+        /// <returns>Tabbed count after attempting to parse command line</returns>
+        private int AttemptToParseCommandInConsole(ParseCommandLineResult previousParseResult, int tabbedCount, StringBuilder builder, ICommandingConsole console)
+        {
+            if (previousParseResult.ThinkWeHaveSomething)
+            {
+                int charactersToRemove = previousParseResult.RemainingText.Length;
+
+                if (tabbedCount > 0)
+                {
+                    //User hit tab before this instance, so remove the text they previously entered before adding something else
+                    var previousTextTabbedIntoConsole = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount - 1);
+                    charactersToRemove = previousTextTabbedIntoConsole.Length;
+                }
+
+                var textToAppend = GetTextToAddToConsoleAtTabCount(previousParseResult, tabbedCount);
+                if (!string.IsNullOrEmpty(textToAppend))
+                {
+                    TrimEndCharacters(builder, console, charactersToRemove);
+                    AppendText(builder, console, textToAppend);
+                    tabbedCount++;
+                }
+            }
+
+            return tabbedCount;
         }
 
         private void TrimCurrentCommandPiece(StringBuilder builder, ICommandingConsole console)
