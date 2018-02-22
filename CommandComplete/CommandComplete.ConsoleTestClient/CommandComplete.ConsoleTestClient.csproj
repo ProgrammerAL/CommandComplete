@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <!-- Exclude the project from analysis -->
-    <SonarQubeExclude>true</SonarQubeExclude>
+    <!--<SonarQubeExclude>true</SonarQubeExclude>-->
+    <SonarQubeTestProject>true</SonarQubeTestProject>
   </PropertyGroup>
   
 </Project>
