@@ -3,7 +3,7 @@ using System;
 
 namespace CommandComplete.ConsoleTestClient
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
