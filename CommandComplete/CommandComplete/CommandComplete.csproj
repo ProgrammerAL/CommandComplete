@@ -11,6 +11,7 @@
     <Product>CommandComplete</Product>
     <AssemblyName>CommandComplete</AssemblyName>
     <RootNamespace>CommandComplete</RootNamespace>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
