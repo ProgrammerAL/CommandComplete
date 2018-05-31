@@ -2,6 +2,10 @@
 
 ![Build Status](https://programmeral.visualstudio.com/_apis/public/build/definitions/06509de1-b684-4544-a7f4-5a0d1a1a4269/28/badge)
 
+![](https://sonarcloud.io/api/project_badges/measure?project=CommandComplete&metric=sqale_rating)
+
+
+
 CommandComplete is a simple text parser for pulling out a command name, along with parameter names/values.
 
 There is also built-in suppport for using the library within a console application, with the ability to autocomplete command and parameter names when hitting the Tab key.
