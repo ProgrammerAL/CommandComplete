@@ -70,7 +70,7 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine("comman", commandCache);
 
-            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.ThinkWeHaveSomething.ShouldBeFalse();
             result.PossibleTextsToAutofill.Count.ShouldBe(2);
         }
 
@@ -95,7 +95,7 @@ namespace CommandComplete.UnitTests
             var parser = new CommandLineParser();
             var result = parser.ParseCommandLine(commandText, commandCache);
 
-            result.ThinkWeHaveSomething.ShouldBeTrue();
+            result.ThinkWeHaveSomething.ShouldBeFalse();
         }
 
         [Fact]

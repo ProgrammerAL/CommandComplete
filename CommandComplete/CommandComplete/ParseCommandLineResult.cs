@@ -29,9 +29,10 @@ namespace CommandComplete
             IEnumerable<ParameterOption> flaggedParameters,
             IEnumerable<(ParameterOption, string)> valuedParameters,
             string remainingText,
-            IEnumerable<string> possibleTextsToAutofill)
+            IEnumerable<string> possibleTextsToAutofill
+            )
         {
-            ThinkWeHaveSomething = true;
+            ThinkWeHaveSomething = command != null;
 
             Command = command;
             FlaggedParameters = flaggedParameters?.ToImmutableList() ?? ImmutableList.Create<ParameterOption>();
@@ -42,7 +43,7 @@ namespace CommandComplete
         }
 
         /// <summary>
-        /// True if ???
+        /// True if Command not null
         /// </summary>
         public bool ThinkWeHaveSomething { get; }
 
@@ -70,5 +71,24 @@ namespace CommandComplete
         /// Possible sets of text that can be added to the end of the command string
         /// </summary>
         public IImmutableList<string> PossibleTextsToAutofill { get; }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            builder.Append(Command?.Name ?? string.Empty);
+
+            foreach (var flaggedParam in FlaggedParameters)
+            {
+                builder.Append(" " + Command.ParameterHeader +  flaggedParam.Name);
+            }
+
+            foreach (var valuedParam in ValuedParameters)
+            {
+                builder.Append(" " + Command.ParameterHeader + valuedParam.Parameter.Name + " " + valuedParam.Value);
+            }
+
+            builder.Append(RemainingText);
+            return builder.ToString();
+        }
     }
 }

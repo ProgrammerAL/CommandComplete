@@ -52,19 +52,26 @@ namespace CommandComplete
 
         public bool TryGetParameterWithNameIgnoringHeader(string name, out ParameterOption matchingParamerter)
         {
-            var paramName = name.TrimStart(ParameterHeader);
+            string paramName = name.TrimStart(ParameterHeader);
             matchingParamerter = Parameters.FirstOrDefault(x => string.Equals(x.Name, paramName, StringComparison.OrdinalIgnoreCase));
             return matchingParamerter != null;
         }
 
         /// <summary>
-        /// When implemented, will ???
-        /// But it's not implemented yet. So don't use it. Or use it, but comment out the calling line. 
-        /// You're smart, I'm sure you'll know what to do.
+        /// Generates a new string with all information for this command
         /// </summary>
         public string GenerateHelpString()
         {
-            throw new NotImplementedException();
+            StringBuilder builder = new StringBuilder(Name + Environment.NewLine);
+
+            foreach (ParameterOption param in Parameters)
+            {
+                builder.AppendLine("\t" + ParameterHeader + param.Name);
+            }
+
+            builder.AppendLine(HelpText);
+
+            return builder.ToString();
         }
 
         /// <summary>
@@ -72,13 +79,13 @@ namespace CommandComplete
         /// </summary>
         public IList<ParameterOption> GetPossibleParametersThatStartWith(string remainingText, IImmutableList<ParameterOption> parametersToExclude)
         {
-            var remaingTextWithoutHeader = remainingText;
+            string remaingTextWithoutHeader = remainingText;
             if (remaingTextWithoutHeader.FirstOrDefault() == ParameterHeader)
             {
                 remaingTextWithoutHeader = remaingTextWithoutHeader.Substring(1);
             }
 
-            var parametersWithoutExclusions = Parameters.Except(parametersToExclude);
+            IEnumerable<ParameterOption> parametersWithoutExclusions = Parameters.Except(parametersToExclude);
 
             if (string.IsNullOrWhiteSpace(remaingTextWithoutHeader))
             {

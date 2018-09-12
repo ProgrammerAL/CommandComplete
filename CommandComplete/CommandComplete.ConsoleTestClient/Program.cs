@@ -3,7 +3,7 @@ using System;
 
 namespace CommandComplete.ConsoleTestClient
 {
-    public class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -13,32 +13,43 @@ namespace CommandComplete.ConsoleTestClient
 
             InitCommands(commandCache);
 
-            var result = consoleCommandLineParser.ParseCommandLine(commandCache, console);
-
-            Console.WriteLine($"Chosen Command: {result.Command.Name}");
-
-            Console.WriteLine("Flagged Params:");
-            foreach (var flaggedParam in result.FlaggedParameters)
+            while (true)
             {
-                Console.WriteLine($"\t{flaggedParam.Name}");
-            }
+                Console.WriteLine("Enter a command: ");
+                ParseCommandLineResult result = consoleCommandLineParser.ParseCommandLine(commandCache, console);
 
-            Console.WriteLine("Valued Params:");
-            foreach (var (parameter, value) in result.ValuedParameters)
-            {
-                Console.WriteLine($"\t{parameter.Name}: {value}");
-            }
+                if (!result.ThinkWeHaveSomething)
+                {
+                    Console.WriteLine("No command parsed from string: " + result.ToString());
+                }
+                else
+                {
+                    Console.WriteLine($"Chosen Command: {result.Command.Name}");
 
-            Console.WriteLine($"Remaining Text: {result.RemainingText}");
+                    Console.WriteLine("Flagged Params:");
+                    foreach (ParameterOption flaggedParam in result.FlaggedParameters)
+                    {
+                        Console.WriteLine($"\t{flaggedParam.Name}");
+                    }
+
+                    Console.WriteLine("Valued Params:");
+                    foreach ((ParameterOption parameter, string value) in result.ValuedParameters)
+                    {
+                        Console.WriteLine($"\t{parameter.Name}: {value}");
+                    }
+
+                    Console.WriteLine($"Remaining Text: {result.RemainingText}");
+                }
+            }
         }
 
         private static void InitCommands(ICommandCache commandCache)
         {
-            var commandNames = new[] { "Help", "Exit", "Command1", "Command2", "Command3" };
+            string[] commandNames = new[] { "Help", "Exit", "Command1", "Command2", "Command3" };
 
-            foreach (var commandName in commandNames)
+            foreach (string commandName in commandNames)
             {
-                var parameters = new[] {
+                ParameterOption[] parameters = new[] {
                     new ParameterOption("Param1", true, "Parameter 1"),
                     new ParameterOption("Param2", true, "Parameter 2"),
                     new ParameterOption("Param3", true, "Parameter 3"),

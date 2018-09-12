@@ -18,32 +18,23 @@ namespace CommandComplete.UnitTests
             _nextKeyInfoIndex = 0;
         }
 
-        public void AppendCharacter(char keyChar)
-        {
-            _builder.Append(keyChar);
-        }
+        public void AppendCharacter(char keyChar) => _builder.Append(keyChar);
 
         public ConsoleKeyInfo GetGetKey(bool hideKeyPressedInConsole)
         {
-            var nextKeyInfo = _keyInfos[_nextKeyInfoIndex];
+            ConsoleKeyInfo nextKeyInfo = _keyInfos[_nextKeyInfoIndex];
             _nextKeyInfoIndex++;
             return nextKeyInfo;
         }
 
         public void TrimEndCharacters(int lengthToDelete)
         {
-            var indexToStartRemoving = _builder.Length - lengthToDelete;
+            int indexToStartRemoving = _builder.Length - lengthToDelete;
             _builder.Remove(indexToStartRemoving, lengthToDelete);
         }
 
-        public void Write(string textToAddToConsole)
-        {
-            _builder.Append(textToAddToConsole);
-        }
-
-        public void SetConsoleKeyInfoOrder(IEnumerable<ConsoleKeyInfo> keyInfos)
-        {
-            _keyInfos = keyInfos.ToImmutableList();
-        }
+        public void Write(string textToAddToConsole) => _builder.Append(textToAddToConsole);
+        public void SetConsoleKeyInfoOrder(IEnumerable<ConsoleKeyInfo> keyInfos) => _keyInfos = keyInfos.ToImmutableList();
+        public void ResetNextKeyIndex() => _nextKeyInfoIndex = 0;
     }
 }

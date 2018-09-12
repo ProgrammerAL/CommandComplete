@@ -1,8 +1,5 @@
 ﻿using CommandComplete.ConsoleParsing;
-using NSubstitute;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using Xunit;
 using Shouldly;
@@ -13,15 +10,12 @@ namespace CommandComplete.UnitTests.Console
     {
         private readonly CommandingConsoleFake _commandingConsoleSubstitute;
 
-        public ConsoleCommandLineParserTest()
-        {
-            _commandingConsoleSubstitute = new CommandingConsoleFake();
-        }
+        public ConsoleCommandLineParserTest() => _commandingConsoleSubstitute = new CommandingConsoleFake();
 
         [Fact]
         public void WhenParsingInput_AssertDirectResult()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -41,7 +35,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -53,7 +47,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenParsingTabbedInput_AssertTabResult()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -74,7 +68,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -86,7 +80,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenCommandEnteredAndTabbingForParam_AssertParamShowed()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -105,7 +99,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -117,7 +111,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenCommandEnteredWithNoParams_AssertCommandFound()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -133,7 +127,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -145,7 +139,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenTabbingWithNoCommandEntered_AssertCommandInserted()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -154,7 +148,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -166,7 +160,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenBackspacePressed_AssertTextRemoved()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -191,7 +185,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -203,7 +197,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenBackspacePressedManyTimes_AssertTextEmpty()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -226,7 +220,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.RemainingText.ShouldBeEmpty();
         }
@@ -234,7 +228,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenParsingTabbedInputMultipleTimes_AssertTabResult()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -270,7 +264,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -283,7 +277,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenHittingTabButNothingToTabTo_AssertTextUnchanged()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -310,7 +304,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.ThinkWeHaveSomething.ShouldBeTrue();
             result.Command.Name.ShouldBe("Command1");
@@ -323,7 +317,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenHittingEscapeOnCommand_AssertCommandNameCleared()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -340,7 +334,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.Command.ShouldBeNull();
             result.FlaggedParameters.ShouldBeEmpty();
@@ -351,7 +345,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenHittingEscapeOnParameterName_AssertParameterNameCleared()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -375,7 +369,7 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.Command.Name.ShouldBe("Command1");
             result.FlaggedParameters.ShouldBeEmpty();
@@ -386,7 +380,7 @@ namespace CommandComplete.UnitTests.Console
         [Fact]
         public void WhenHittingEscapeOnParameterValue_AssertParameterValueCleared()
         {
-            var commandCache = GenerateCommandCache();
+            ICommandCache commandCache = GenerateCommandCache();
 
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
@@ -416,13 +410,340 @@ namespace CommandComplete.UnitTests.Console
             });
 
             var parser = new ConsoleCommandLineParser();
-            var result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
 
             result.Command.Name.ShouldBe("Command1");
             result.FlaggedParameters.ShouldBeEmpty();
             result.ValuedParameters.Single().Parameter.Name.ShouldBe("Param1");
             result.ValuedParameters.Single().Value.ShouldBeEmpty();
             result.RemainingText.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public void WhenHittingEnterWithNothingEnteredIntoLine_AssertNotValid()
+        {
+            ICommandCache commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            var parser = new ConsoleCommandLineParser();
+            ParseCommandLineResult result = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+
+            result.ThinkWeHaveSomething.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void WhenUsingPastResultsUpArrow_AssertDirectResult()
+        {
+            ICommandCache commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command1 10 times, meaning the entire history is filled with this one
+            var parser = new ConsoleCommandLineParser();
+            for (int i = 0; i < 10; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('2', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command2 9 times, so only the very last item is Command1
+            for (int i = 0; i < 9; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            //Hit up arrow key 9 times. Meaning skip over the most recent Command2 and get Command1
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                //Add a few misc characters to prove they're removed when using up arrow
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            ParseCommandLineResult finalResult = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            finalResult.ThinkWeHaveSomething.ShouldBeTrue();
+            finalResult.Command.Name.ShouldBe("Command1");
+        }
+
+        [Fact]
+        public void WhenUsingPastResultsDownArrow_AssertDirectResult()
+        {
+            ICommandCache commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command1 10 times, meaning the entire history is filled with this one
+            var parser = new ConsoleCommandLineParser();
+            for (int i = 0; i < 10; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('2', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command2 3 times, so only the very last item is Command1
+            for (int i = 0; i < 3; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            //Hit up down key 8 times. Meaning start looking at the end of the history buffer and end of on the last instance of Command2 typed in
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                //Add a few misc characters to prove they're removed when using up arrow
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            ParseCommandLineResult finalResult = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            finalResult.ThinkWeHaveSomething.ShouldBeTrue();
+            finalResult.Command.Name.ShouldBe("Command2");
+        }
+
+        [Fact]
+        public void WhenUsingUpArrowForPastResultsIsPressedALot_AssertDirectResult()
+        {
+            ICommandCache commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command1 10 times, meaning the entire history is filled with this one
+            var parser = new ConsoleCommandLineParser();
+            for (int i = 0; i < 10; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('2', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command2 9 times, so only the very last item is Command1
+            for (int i = 0; i < 9; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            //Hit up arrow key 9 times. Meaning skip over the most recent Command2 and get Command1
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                //Add a few misc characters to prove they're removed when using up arrow
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+
+                //Up arrow 10 times so it goes past the history buffer
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+
+                //Up arrow 9 more times to go to the only instance of Command1 in the history buffer
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            ParseCommandLineResult finalResult = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            finalResult.ThinkWeHaveSomething.ShouldBeTrue();
+            finalResult.Command.Name.ShouldBe("Command1");
+        }
+
+        [Fact]
+        public void WhenUsingDownArrowForPastResultsIsPressedALot_AssertDirectResult()
+        {
+            ICommandCache commandCache = GenerateCommandCache();
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('1', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command1 10 times, meaning the entire history is filled with this one
+            var parser = new ConsoleCommandLineParser();
+            for (int i = 0; i < 10; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                new ConsoleKeyInfo('C', ConsoleKey.C, true, false, false),
+                new ConsoleKeyInfo('o', ConsoleKey.O, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('m', ConsoleKey.M, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('n', ConsoleKey.N, false, false, false),
+                new ConsoleKeyInfo('d', ConsoleKey.D, false, false, false),
+                new ConsoleKeyInfo('2', ConsoleKey.NumPad1, false, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            //Type in Command2 one time, so only the first command in history buffer is Command2 and the rest are Command1
+            for (int i = 0; i < 1; i++)
+            {
+                parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+                _commandingConsoleSubstitute.ResetNextKeyIndex();
+            }
+
+            //Hit up arrow key 9 times. Meaning skip over the most recent Command2 and get Command1
+            _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
+            {
+                //Add a few misc characters to prove they're removed when using up arrow
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+                new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
+
+                //Down arrow 10 times so it goes past the history buffer
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+
+                //Down arrow 10 more times to go to the only instance of Command2 in the history buffer. The one at the front. Index 0
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo(' ', ConsoleKey.DownArrow, true, false, false),
+                new ConsoleKeyInfo('\n', ConsoleKey.Enter, false, false, false),
+            });
+
+            ParseCommandLineResult finalResult = parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
+            finalResult.ThinkWeHaveSomething.ShouldBeTrue();
+            finalResult.Command.Name.ShouldBe("Command2");
         }
 
         private ICommandCache GenerateCommandCache()
