@@ -44,12 +44,18 @@ namespace CommandComplete.ConsoleParsing
                         tabbedCount = AttemptToParseCommandInConsole(previousParseResult, tabbedCount, builder, console);
                         break;
                     case ConsoleKey.UpArrow:
-                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
-                        currentHistoryBufferIndex = IncreaseHistoryCount(currentHistoryBufferIndex);
+                        if (_pastResults.Any())
+                        {
+                            ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
+                            currentHistoryBufferIndex = IncreaseHistoryCount(currentHistoryBufferIndex);
+                        }
                         break;
                     case ConsoleKey.DownArrow:
-                        currentHistoryBufferIndex = DecreaseHistoryCount(currentHistoryBufferIndex);
-                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
+                        if (_pastResults.Any())
+                        {
+                            currentHistoryBufferIndex = DecreaseHistoryCount(currentHistoryBufferIndex);
+                            ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
+                        }
                         break;
                     default:
                         AppendCharacter(builder, console, nextKey.KeyChar);
@@ -78,7 +84,7 @@ namespace CommandComplete.ConsoleParsing
             currentHistoryBufferIndex--;
             if (currentHistoryBufferIndex < 0)
             {
-                var historyBufferCount = CalculateHistoryBufferCount();
+                int historyBufferCount = CalculateHistoryBufferCount();
                 currentHistoryBufferIndex = historyBufferCount - 1;
             }
 
@@ -88,7 +94,7 @@ namespace CommandComplete.ConsoleParsing
         private int IncreaseHistoryCount(int currentHistoryBufferIndex)
         {
             currentHistoryBufferIndex++;
-            var historyBufferCount = CalculateHistoryBufferCount();
+            int historyBufferCount = CalculateHistoryBufferCount();
             if (currentHistoryBufferIndex == historyBufferCount)
             {
                 currentHistoryBufferIndex = 0;
