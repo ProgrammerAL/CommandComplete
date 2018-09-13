@@ -455,7 +455,7 @@ namespace CommandComplete.UnitTests.Console
 
             //Type in Command1 10 times, meaning the entire history is filled with this one
             var parser = new ConsoleCommandLineParser();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
                 parser.ParseCommandLine(commandCache, _commandingConsoleSubstitute);
                 _commandingConsoleSubstitute.ResetNextKeyIndex();
@@ -481,7 +481,7 @@ namespace CommandComplete.UnitTests.Console
                 _commandingConsoleSubstitute.ResetNextKeyIndex();
             }
 
-            //Hit up arrow key 9 times. Meaning skip over the most recent Command2 and get Command1
+            //Hit up arrow key 10 times. Meaning skip over the most recent Command2 and get Command1
             _commandingConsoleSubstitute.SetConsoleKeyInfoOrder(new[]
             {
                 //Add a few misc characters to prove they're removed when using up arrow
@@ -489,6 +489,7 @@ namespace CommandComplete.UnitTests.Console
                 new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
                 new ConsoleKeyInfo('a', ConsoleKey.A, false, false, false),
 
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
@@ -643,7 +644,8 @@ namespace CommandComplete.UnitTests.Console
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
 
-                //Up arrow 9 more times to go to the only instance of Command1 in the history buffer
+                //Up arrow 10 more times to go to the only instance of Command1 in the history buffer
+                new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),
                 new ConsoleKeyInfo(' ', ConsoleKey.UpArrow, true, false, false),

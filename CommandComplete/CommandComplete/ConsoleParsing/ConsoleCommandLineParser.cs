@@ -34,25 +34,28 @@ namespace CommandComplete.ConsoleParsing
                         break;
                     case ConsoleKey.Backspace:
                         TrimEndCharacters(builder, console, 1);
+                        currentHistoryBufferIndex = 0;
                         break;
                     case ConsoleKey.Escape:
                         TrimCurrentCommandPiece(builder, console);
+                        currentHistoryBufferIndex = 0;
                         break;
                     case ConsoleKey.Tab:
                         tabbedCount = AttemptToParseCommandInConsole(previousParseResult, tabbedCount, builder, console);
                         break;
                     case ConsoleKey.UpArrow:
+                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
                         currentHistoryBufferIndex = IncreaseHistoryCount(currentHistoryBufferIndex);
-                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex);
                         break;
                     case ConsoleKey.DownArrow:
                         currentHistoryBufferIndex = DecreaseHistoryCount(currentHistoryBufferIndex);
-                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex);
+                        ReplaceConsoleCommandWithHistoryItem(builder, currentHistoryBufferIndex, console);
                         break;
                     default:
-                        AppenCharacter(builder, console, nextKey.KeyChar);
+                        AppendCharacter(builder, console, nextKey.KeyChar);
                         previousParseResult = parser.ParseCommandLine(builder.ToString(), commandCache);
                         tabbedCount = 0;
+                        currentHistoryBufferIndex = 0;
                         break;
                 }
             }
@@ -64,11 +67,10 @@ namespace CommandComplete.ConsoleParsing
             return finalParsedCommandLine;
         }
 
-        private void ReplaceConsoleCommandWithHistoryItem(StringBuilder builder, int historyIndex)
+        private void ReplaceConsoleCommandWithHistoryItem(StringBuilder builder, int historyIndex, ICommandingConsole console)
         {
-            builder.Clear();
             ParseCommandLineResult commandToRepalceWith = _pastResults.Skip(historyIndex).Take(1).Single();
-            builder.Append(commandToRepalceWith.ToString());
+            RepalceText(builder, console, commandToRepalceWith.ToString());
         }
 
         private int DecreaseHistoryCount(int currentHistoryBufferIndex)
@@ -76,7 +78,8 @@ namespace CommandComplete.ConsoleParsing
             currentHistoryBufferIndex--;
             if (currentHistoryBufferIndex < 0)
             {
-                currentHistoryBufferIndex = MaxHistory - 1;
+                var historyBufferCount = CalculateHistoryBufferCount();
+                currentHistoryBufferIndex = historyBufferCount - 1;
             }
 
             return currentHistoryBufferIndex;
@@ -85,13 +88,16 @@ namespace CommandComplete.ConsoleParsing
         private int IncreaseHistoryCount(int currentHistoryBufferIndex)
         {
             currentHistoryBufferIndex++;
-            if (currentHistoryBufferIndex == MaxHistory)
+            var historyBufferCount = CalculateHistoryBufferCount();
+            if (currentHistoryBufferIndex == historyBufferCount)
             {
                 currentHistoryBufferIndex = 0;
             }
 
             return currentHistoryBufferIndex;
         }
+
+        private int CalculateHistoryBufferCount() => Math.Min(_pastResults.Count, MaxHistory);
 
         /// <summary>
         /// Tries to parse out a command from the string entered so far in the commpand line
@@ -141,7 +147,7 @@ namespace CommandComplete.ConsoleParsing
             }
         }
 
-        private void AppenCharacter(StringBuilder builder, ICommandingConsole console, char keyChar)
+        private void AppendCharacter(StringBuilder builder, ICommandingConsole console, char keyChar)
         {
             builder.Append(keyChar);
             console.AppendCharacter(keyChar);
@@ -149,6 +155,15 @@ namespace CommandComplete.ConsoleParsing
 
         private void AppendText(StringBuilder builder, ICommandingConsole console, string textToAppend)
         {
+            builder.Append(textToAppend);
+            console.Write(textToAppend);
+        }
+
+        private void RepalceText(StringBuilder builder, ICommandingConsole console, string textToAppend)
+        {
+            console.TrimEndCharacters(builder.Length);
+            builder.Clear();
+
             builder.Append(textToAppend);
             console.Write(textToAppend);
         }
